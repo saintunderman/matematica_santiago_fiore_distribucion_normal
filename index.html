@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Distribución Normal — Análisis Visual Interactivo</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- MathJax Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+  </script>
+  
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-card: #ffffff;
+      --glass: rgba(255, 255, 255, 0.95);
+      --glass-border: rgba(0, 0, 0, 0.08);
+      --text-primary: #1e293b;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      --accent-amber: #f59e0b;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --accent-orange: #f97316;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --radius: 16px;
+      --shadow-glow: 0 0 30px rgba(59, 130, 246, 0.15);
+      --shadow-card: 0 4px 25px rgba(0, 0, 0, 0.08);
+      --border-light: rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0a0f1c;
+      --bg-secondary: #1a1f2e;
+      --bg-card: rgba(26, 31, 46, 0.95);
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-primary: #f1f5f9;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border-light: rgba(255, 255, 255, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem;
+      -webkit-font-smoothing: antialiased;
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] body {
+      background: 
+        radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg-primary) 0%, #0f1419 100%);
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    header {
+      text-align: center; margin-bottom: 3rem; padding: 3rem 2rem;
+      background: var(--bg-card); backdrop-filter: blur(30px); border: 1px solid var(--border-light);
+      border-radius: var(--radius); box-shadow: var(--shadow-card); position: relative; overflow: hidden;
+    }
+
+    .theme-toggle {
+      position: absolute; top: 1rem; right: 1rem; background: var(--glass);
+      border: 1px solid var(--border-light); border-radius: 50px; padding: 0.5rem 1rem;
+      cursor: pointer; font-size: 0.9rem; color: var(--text-secondary); transition: all 0.3s ease;
+    }
+    .theme-toggle:hover { background: var(--accent-blue); color: white; transform: scale(1.05); }
+
+    header h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 50%, var(--accent-green) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 1.5rem; position: relative; z-index: 1;
+    }
+
+    header p {
+      font-size: 1.2rem; color: var(--text-secondary); max-width: 900px;
+      margin: 0 auto; line-height: 1.7; position: relative; z-index: 1;
+    }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; margin-bottom: 3rem; }
+
+    .card {
+      background: var(--bg-card); backdrop-filter: blur(30px); border: 1px solid var(--border-light);
+      border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow-card);
+      position: relative; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--accent-blue), rgba(255,255,255,0.3));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-card), var(--shadow-glow); }
+
+    .card-header { margin-bottom: 2rem; }
+
+    .card-title {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .card-title h2 { font-size: 1.8rem; font-weight: 600; color: var(--text-primary); }
+
+    .notation {
+      font-family: 'JetBrains Mono', monospace; background: var(--glass); padding: 0.4rem 1rem;
+      border-radius: 12px; font-size: 1.1rem; color: var(--text-secondary); border: 1px solid var(--border-light);
+    }
+
+    .toggle-button {
+      background: var(--accent-blue); color: white; border: none; padding: 0.5rem 1rem;
+      border-radius: 20px; font-size: 0.85rem; font-weight: 500; cursor: pointer;
+      transition: all 0.3s ease; margin-left: auto;
+    }
+    .toggle-button:hover { transform: scale(1.05); }
+    .toggle-button:focus-visible { outline: 2px solid var(--accent-purple); outline-offset: 2px; }
+    .toggle-button.formula-btn { background: var(--accent-blue); }
+    .toggle-button.moments-btn { background: var(--accent-green); }
+    .toggle-button.formula-btn:hover { background: var(--accent-purple); }
+    .toggle-button.moments-btn:hover { background: var(--accent-purple); }
+
+    .formula-section {
+      margin-top: 1.5rem; padding: 0; background: transparent; border: none; overflow: hidden;
+      transition: all 0.5s ease; max-height: 0; opacity: 0;
+    }
+    .formula-section.show {
+      max-height: 1500px; opacity: 1; padding: 2rem; background: var(--glass);
+      border-radius: 16px; border: 1px solid var(--border-light); margin-top: 1.5rem;
+    }
+    .formula-title {
+      font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);
+      font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .formula-title::before { content: '∴'; color: var(--accent-blue); font-size: 1.2rem; }
+
+    .formula {
+      margin: 1rem 0; padding: 1rem; background: rgba(0, 0, 0, 0.05);
+      border-radius: 12px; text-align: center; border: 1px solid var(--border-light); overflow-x: auto;
+    }
+    [data-theme="dark"] .formula { background: rgba(0, 0, 0, 0.3); }
+
+    .controls { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+
+    .meta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
+    .chip {
+      background: var(--glass); color: var(--text-secondary); padding: 0.6rem 1.2rem;
+      border-radius: 25px; font-size: 0.9rem; font-weight: 500;
+      transition: all 0.3s ease; border: 1px solid var(--border-light);
+    }
+    .chip:hover { background: var(--accent-blue); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+
+    canvas {
+      width: 100% !important; height: 350px !important; border-radius: 16px;
+      background: linear-gradient(135deg, var(--glass), var(--bg-secondary)); border: 1px solid var(--border-light);
+      margin: 1.5rem 0; display: block; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    canvas:hover { box-shadow: 0 0 0 2px var(--accent-blue), var(--shadow-card); }
+
+    .slider-container { margin: 1.5rem 0; }
+    .slider-row { display: flex; align-items: center; margin-bottom: 1rem; gap: 1rem; }
+    .slider-label { min-width: 150px; font-size: 1rem; color: var(--text-secondary); font-weight: 500; }
+    .slider-value {
+      min-width: 50px; font-family: 'JetBrains Mono', monospace; background: var(--glass);
+      padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.9rem;
+      color: var(--text-secondary); border: 1px solid var(--border-light); text-align: center;
+    }
+    input[type="range"] {
+      -webkit-appearance: none; appearance: none; flex: 1; height: 8px;
+      background: transparent; outline: none; cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%; height: 8px;
+      background: linear-gradient(to right, var(--accent-blue) var(--progress), var(--glass) var(--progress));
+      border-radius: 4px; border: 1px solid var(--border-light);
+    }
+    input[type="range"]::-moz-range-track { width: 100%; height: 8px; background: var(--glass); border-radius: 4px; border: 1px solid var(--border-light); }
+    input[type="range"]::-moz-range-progress { background-color: var(--accent-blue); height: 8px; border-radius: 4px; }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none; margin-top: -7px; width: 22px; height: 22px; border-radius: 50%;
+      background: var(--bg-card); border: 2px solid var(--accent-blue);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), 0 0 0 3px var(--accent-blue) inset; transition: transform 0.2s ease;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px; height: 20px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--accent-blue);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), 0 0 0 3px var(--accent-blue) inset; transition: transform 0.2s ease;
+    }
+    input[type="range"]:hover::-webkit-slider-thumb, input[type="range"]:focus-visible::-webkit-slider-thumb { transform: scale(1.2); }
+    input[type="range"]:hover::-moz-range-thumb, input[type="range"]:focus-visible::-moz-range-thumb { transform: scale(1.2); }
+    
+    .legend {
+      display: flex; align-items: center; gap: 1.5rem; margin-top: -0.5rem;
+      margin-bottom: 2rem; justify-content: center; flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 0.75rem; font-size: 0.95rem;
+      color: var(--text-secondary); padding: 0.5rem 1rem; background: var(--glass);
+      border-radius: 12px; border: 1px solid var(--border-light);
+    }
+    .legend-dot { width: 14px; height: 6px; border-radius: 6px; box-shadow: 0 0 8px currentColor; }
+
+    .info { margin-top: 1rem; }
+    .description { color: var(--text-secondary); line-height: 1.7; margin-bottom: 2rem; font-size: 1.05rem; }
+
+    .advantages-section { display: grid; gap: 1.5rem; }
+    .advantage, .disadvantage {
+      display: flex; gap: 1rem; align-items: flex-start; padding: 1.5rem;
+      border-radius: 16px; position: relative; transition: all 0.3s ease; border: 1px solid;
+    }
+    .advantage { background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 197, 94, 0.03)); border-color: rgba(34, 197, 94, 0.2); }
+    .disadvantage { background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.03)); border-color: rgba(239, 68, 68, 0.2); }
+    .advantage:hover, .disadvantage:hover { transform: translateX(8px); }
+    .advantage::before, .disadvantage::before {
+      font-weight: bold; font-size: 1.4rem; flex-shrink: 0; width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    }
+    .advantage::before { content: '✓'; color: var(--success); background: rgba(34, 197, 94, 0.15); }
+    .disadvantage::before { content: '✗'; color: var(--danger); background: rgba(239, 68, 68, 0.15); }
+    .adv-label, .disadv-label { font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; letter-spacing: 0.5px; }
+    .adv-label { color: var(--success); }
+    .disadv-label { color: var(--danger); }
+    .adv-content, .disadv-content { color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; }
+
+    footer {
+      text-align: center; padding: 2rem; color: var(--text-muted); background: var(--bg-card);
+      backdrop-filter: blur(30px); border: 1px solid var(--border-light);
+      border-radius: var(--radius); margin-top: 2rem;
+    }
+    footer a { color: var(--accent-blue); text-decoration: none; font-weight: 500; transition: all 0.2s ease; }
+    footer a:hover { color: var(--accent-purple); text-decoration: underline; }
+
+    .MathJax, mjx-container[jax="CHTML"] { color: var(--text-secondary) !important; font-size: 1.1em !important; }
+
+    .modal {
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+      width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px); justify-content: center; align-items: center;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal.show { display: flex; opacity: 1; }
+    .modal-content {
+      background-color: var(--bg-card); padding: 2rem; border-radius: var(--radius);
+      border: 1px solid var(--border-light); box-shadow: var(--shadow-card), 0 0 40px rgba(0, 0, 0, 0.2);
+      max-width: 90%; max-height: 90%; width: auto; position: relative;
+      transform: scale(0.9); transition: transform 0.3s ease;
+    }
+    .modal.show .modal-content { transform: scale(1); }
+    .close-modal {
+      position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: var(--text-muted);
+      cursor: pointer; background: var(--glass); width: 32px; height: 32px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border-light); transition: all 0.2s ease;
+    }
+    .close-modal:hover { color: var(--danger); transform: rotate(90deg); }
+    .modal-canvas-container { position: relative; width: 700px; height: 450px; }
+    .modal-title { margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.4rem; text-align: center; }
+
+    .property-card { background: var(--glass); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-light); }
+    .property-title {
+      font-weight: 600; margin-bottom: 0.75rem; color: var(--accent-blue);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .property-title::before { content: 'ⓘ'; font-size: 1.1rem; }
+    .property-content { color: var(--text-secondary); line-height: 1.6; }
+
+    .standard-deviations { display: flex; justify-content: space-between; margin: 1.5rem 0; position: relative; }
+    .sd-mark { display: flex; flex-direction: column; align-items: center; text-align: center; width: 30%; }
+    .sd-bar { height: 6px; width: 100%; border-radius: 3px; margin-bottom: 0.5rem; }
+    .sd-label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+    .sd-percentage {
+      font-size: 1.1rem; color: var(--text-secondary); font-weight: 600;
+      margin-top: 0.5rem; font-family: 'JetBrains Mono', monospace;
+    }
+
+    .probability-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+    .probability-input { display: flex; flex-direction: column; gap: 0.5rem; }
+    .probability-input label { font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; }
+    .probability-input input {
+      padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-light);
+      background: var(--glass); color: var(--text-primary); font-family: 'JetBrains Mono', monospace;
+    }
+    .probability-result {
+      background: var(--glass); padding: 1.5rem; border-radius: 12px;
+      border: 1px solid var(--border-light); margin: 1.5rem 0; text-align: center;
+    }
+    .probability-value { font-size: 1.5rem; font-weight: 700; color: var(--accent-blue); margin: 0.5rem 0; }
+    .probability-formula { font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    .area-toggle { display: flex; align-items: center; gap: 0.75rem; margin: 1rem 0; }
+    .area-toggle label { font-size: 0.9rem; color: var(--text-secondary); }
+    .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider-round {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--glass); transition: .4s; border-radius: 24px; border: 1px solid var(--border-light);
+    }
+    .slider-round:before {
+      position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px;
+      background-color: var(--accent-blue); transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider-round { background-color: var(--accent-blue); }
+    input:checked + .slider-round:before { transform: translateX(26px); background-color: white; }
+
+    .examples-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .example-card {
+      background: var(--glass); padding: 1.5rem; border-radius: 12px;
+      border: 1px solid var(--border-light); transition: all 0.3s ease;
+    }
+    .example-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); }
+    .example-title {
+      font-weight: 600; margin-bottom: 1rem; color: var(--accent-blue);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .example-title::before { content: '📊'; font-size: 1.1rem; }
+    .example-content { color: var(--text-secondary); line-height: 1.6; font-size: 0.95rem; }
+
+    .section-title {
+      font-size: 1.8rem; font-weight: 600; color: var(--text-primary);
+      margin-bottom: 2rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 1rem; }
+      .card { padding: 2rem; }
+      canvas { height: 280px !important; }
+      header { padding: 2rem 1.5rem; }
+      .card-title { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .controls { justify-content: center; }
+      .slider-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .slider-label { min-width: auto; }
+      .modal-content { padding: 1.5rem; width: 95%; }
+      .modal-canvas-container { width: 100%; height: 350px; }
+      .probability-controls { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .formula-section.show { padding: 1.5rem; }
+      .advantage, .disadvantage { padding: 1.25rem; }
+      .modal-canvas-container { height: 280px; }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="container">
+    <header>
+      <button class="theme-toggle" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+      <h1>Distribución Normal</h1>
+      <p>Análisis interactivo de la distribución normal, la distribución de probabilidad continua más importante en estadística. Explora sus propiedades, fórmulas y aplicaciones con controles dinámicos para una mejor comprensión.</p>
+    </header>
+
+    <main class="grid">
+      <!-- Tarjeta 1: Visualizador Interactivo -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <h2>Visualizador Interactivo</h2>
+            <code class="notation">$X \sim \mathcal{N}(\mu, \sigma^2)$</code>
+          </div>
+          <div class="controls">
+            <button class="toggle-button formula-btn" onclick="toggleSection(this, 'normal-formulas')" aria-expanded="false" aria-controls="normal-formulas">📐 Ver Fórmulas</button>
+            <button class="toggle-button moments-btn" onclick="toggleSection(this, 'normal-moments')" aria-expanded="false" aria-controls="normal-moments">📊 Ver Momentos</button>
+          </div>
+          <div id="normal-formulas" class="formula-section">
+            <div class="formula-title">Función de Densidad de Probabilidad (PDF)</div>
+            <div class="formula">$$f(x; \mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</div>
+            <div class="formula-title">Función de Distribución Acumulada (CDF)</div>
+            <div class="formula">$$F(x; \mu, \sigma^2) = \frac{1}{2}\left[1 + \operatorname{erf}\left(\frac{x-\mu}{\sigma\sqrt{2}}\right)\right]$$</div>
+            <div class="description" style="font-size: 0.9rem; margin-top: 0.5rem;">Donde $\operatorname{erf}$ es la función error, una integral no elemental fundamental en estadística.</div>
+            <div class="formula-title">Transformación a Normal Estándar</div>
+            <div class="formula">$$Z = \frac{X - \mu}{\sigma} \sim \mathcal{N}(0, 1)$$</div>
+          </div>
+          <div id="normal-moments" class="formula-section">
+            <div class="formula-title">Momentos Principales</div>
+            <div class="formula">$$\text{Media: } E[X] = \mu$$ $$\text{Varianza: } \text{Var}(X) = \sigma^2$$ $$\text{Asimetría: } \gamma_1 = 0$$ $$\text{Curtosis: } \gamma_2 = 3$$</div>
+            <div class="formula-title">Función Generadora de Momentos</div>
+            <div class="formula">$$M_X(t) = e^{\mu t + \frac{1}{2}\sigma^2 t^2}$$</div>
+          </div>
+        </div>
+
+        <div class="meta">
+          <span class="chip">Parámetros: μ (media), σ² (varianza)</span>
+          <span class="chip">Dominio: $x \in (-\infty, +\infty)$</span>
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-row">
+            <label for="normal-mu" class="slider-label">Media (μ):</label>
+            <input type="range" id="normal-mu" min="-3" max="3" step="0.1" value="0" oninput="updateNormal()">
+            <span class="slider-value" id="normal-mu-value">0</span>
+          </div>
+          <div class="slider-row">
+            <label for="normal-sigma" class="slider-label">Desviación (σ):</label>
+            <input type="range" id="normal-sigma" min="0.5" max="2" step="0.1" value="1" oninput="updateNormal()">
+            <span class="slider-value" id="normal-sigma-value">1</span>
+          </div>
+        </div>
+
+        <div class="area-toggle">
+          <label for="show-areas">Mostrar áreas (Regla Empírica):</label>
+          <label class="switch">
+            <input type="checkbox" id="show-areas" onchange="updateNormal()">
+            <span class="slider-round"></span>
+          </label>
+        </div>
+
+        <canvas id="plot-normal" onclick="openModal()"></canvas>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background: var(--text-primary); color: var(--text-primary);"></span>
+            <span>Distribución Normal</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: rgba(239, 68, 68, 0.6); color: rgba(239, 68, 68, 0.6);"></span>
+            <span>Área P(a ≤ X ≤ b)</span>
+          </div>
+          <div class="legend-item">
+            <button class="toggle-button" onclick="openModal()" style="margin: 0; font-size: 0.8rem; padding: 0.4rem 0.8rem;">🔍 Ampliar Gráfico</button>
+          </div>
+        </div>
+
+        <div class="probability-controls">
+          <div class="probability-input">
+            <label for="prob-a">Límite inferior (a):</label>
+            <input type="number" id="prob-a" value="-1" step="0.1" onchange="calculateProbability()">
+          </div>
+          <div class="probability-input">
+            <label for="prob-b">Límite superior (b):</label>
+            <input type="number" id="prob-b" value="1" step="0.1" onchange="calculateProbability()">
+          </div>
+        </div>
+
+        <div class="probability-result">
+          <div>Probabilidad entre a y b:</div>
+          <div class="probability-value" id="probability-value">68.27%</div>
+          <div class="probability-formula">$P(a \leq X \leq b) = F(b) - F(a)$</div>
+        </div>
+      </section>
+
+      <!-- Tarjeta 2: Propiedades y Contexto -->
+      <section class="card">
+        <h2 class="section-title">Propiedades y Contexto de Aplicación</h2>
+        
+        <p class="description">La distribución Normal, conocida como la "curva de campana" o distribución Gaussiana, es la piedra angular de la estadística moderna. Su omnipresencia se debe al <b>Teorema Central del Límite</b>, uno de los resultados más notables de las matemáticas. Este teorema postula que al sumar un gran número de variables aleatorias independientes, su suma (y su media) tenderá a distribuirse normalmente, sin importar cómo se distribuyan las variables originales. Por ello, fenómenos naturales y sociales que resultan de la combinación de muchos factores pequeños e independientes (como la altura de una persona o los errores de medición) siguen esta distribución de forma natural.</p>
+          
+        <div class="property-card" style="margin-bottom: 2rem;">
+            <h3 class="property-title">Regla Empírica 68-95-99.7</h3>
+            <div class="property-content">
+              <p>Para cualquier distribución normal, los datos se distribuyen de forma predecible:</p>
+              <div class="standard-deviations">
+                <div class="sd-mark"><div class="sd-bar" style="background: rgba(59, 130, 246, 0.3);"></div><div class="sd-label">μ ± 1σ</div><div class="sd-percentage">~68.27%</div></div>
+                <div class="sd-mark"><div class="sd-bar" style="background: rgba(59, 130, 246, 0.5);"></div><div class="sd-label">μ ± 2σ</div><div class="sd-percentage">~95.45%</div></div>
+                <div class="sd-mark"><div class="sd-bar" style="background: rgba(59, 130, 246, 0.7);"></div><div class="sd-label">μ ± 3σ</div><div class="sd-percentage">~99.73%</div></div>
+              </div>
+            </div>
+        </div>
+
+        <div class="property-card" style="margin-bottom: 2rem;">
+            <h3 class="property-title" style="color: var(--accent-green)">Aplicaciones en el Mundo Real</h3>
+            <div class="property-content">
+              <ul style="padding-left: 1.2rem; display: grid; gap: 0.75rem;">
+                <li><b>Inferencia Estadística:</b> Es la base para pruebas de hipótesis (t-test, ANOVA) y para construir intervalos de confianza.</li>
+                <li><b>Control de Calidad:</b> Se usa para monitorear procesos de fabricación, estableciendo límites de control (ej. gráficos de control de Shewhart).</li>
+                <li><b>Finanzas y Gestión de Riesgos:</b> Modela el rendimiento de activos y es fundamental en modelos como el de Black-Scholes para la valoración de opciones.</li>
+                <li><b>Ciencias Naturales y Sociales:</b> Modela fenómenos como errores de medición, la altura o el CI de una población, o la distribución de velocidades de partículas en un gas.</li>
+                <li><b>Procesamiento de Señales:</b> El "ruido blanco" en señales de audio o imagen a menudo se modela como una distribución normal.</li>
+              </ul>
+              <div class="examples-grid">
+                <div class="example-card"><div class="example-title">Ejemplo: Altura</div><div class="example-content">La altura de los adultos en una población sigue una distribución normal. Si μ=170cm y σ=10cm, el 68% de las personas medirán entre 160cm y 180cm.</div></div>
+                <div class="example-card"><div class="example-title">Ejemplo: Calificaciones</div><div class="example-content">Las notas de un examen suelen ser normales. Si la media es 75 y σ=10, el 95% de los estudiantes obtuvieron entre 55 y 95 puntos.</div></div>
+              </div>
+            </div>
+        </div>
+
+        <div class="advantages-section">
+            <div class="advantage"><div><div class="adv-label">FORTALEZAS CLAVE</div><div class="adv-content">• <b>Fundamento Teórico Sólido:</b> Es la base para la inferencia estadística, permitiendo pruebas de hipótesis y la creación de intervalos de confianza robustos.<br>• <b>Propiedades Matemáticas Elegantes:</b> Sus características la hacen predecible y fácil de manipular algebraicamente.<br>• <b>Aplicabilidad Universal (TCL):</b> Modela con precisión una vasta gama de fenómenos del mundo real.<br>• <b>Interpretación Intuitiva:</b> La media (μ) y la desviación estándar (σ) tienen significados directos y comprensibles.</div></div></div>
+            <div class="disadvantage"><div><div class="disadv-label">LIMITACIONES A CONSIDERAR</div><div class="disadv-content">• <b>Simetría Obligatoria:</b> No puede modelar datos con asimetría inherente (sesgados a la izquierda o derecha).<br>• <b>Subestima Eventos Extremos:</b> Sus "colas" decaen muy rápidamente, haciéndola inadecuada para modelar fenómenos con alto riesgo de valores atípicos.<br>• <b>Dominio Infinito:</b> Asume que la variable puede tomar cualquier valor real, lo cual es irreal para variables con límites físicos.<br>• <b>Sensibilidad a Outliers:</b> La media y la desviación estándar son sensibles a valores extremos que pueden distorsionar el modelo.</div></div></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Desarrollado por <a href="https://sites.google.com/view/santiago-fiore/portada" target="_blank" rel="noopener noreferrer">Matemática Santiago Fiore</a></p>
+      <p style="margin-top: 0.5rem; font-size: 0.9rem;">Recurso educativo para el estudio de la Distribución Normal</p>
+    </footer>
+
+  </div>
+
+  <!-- Modal -->
+  <div id="chart-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h3 class="modal-title" id="modal-title">Distribución Normal</h3>
+      <div class="modal-canvas-container"><canvas id="modal-canvas"></canvas></div>
+    </div>
+  </div>
+
+  <script>
+    let mainChart = null, modalChart = null;
+
+    function normalPDF(x, mu, sigma) { return (1/(sigma*Math.sqrt(2*Math.PI)))*Math.exp(-0.5*Math.pow((x-mu)/sigma,2)); }
+    function normalCDF(x, mean, stdDev) { return 0.5 * (1 + erf((x - mean) / (stdDev * Math.sqrt(2)))); }
+    function erf(x) {
+      const sign=(x>=0)?1:-1; x=Math.abs(x);
+      const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
+      const t=1.0/(1.0+p*x);
+      const y=1.0-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+      return sign*y;
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const button = document.querySelector('.theme-toggle');
+      if (body.getAttribute('data-theme') === 'dark') {
+        body.setAttribute('data-theme', 'light'); button.textContent = '🌙 Modo Oscuro';
+      } else {
+        body.setAttribute('data-theme', 'dark'); button.textContent = '☀️ Modo Claro';
+      }
+      setTimeout(updateAllCharts, 100);
+    }
+
+    function toggleSection(button, sectionId) {
+      const section = document.getElementById(sectionId);
+      const isShowing = section.classList.toggle('show');
+      button.setAttribute('aria-expanded', isShowing);
+      const action = isShowing ? 'Ocultar' : 'Ver';
+      if (button.textContent.includes('Fórmulas')) button.textContent = `📐 ${action} Fórmulas`;
+      else if (button.textContent.includes('Momentos')) button.textContent = `📊 ${action} Momentos`;
+    }
+    
+    function calculateProbability() {
+        const a = parseFloat(document.getElementById('prob-a').value), b = parseFloat(document.getElementById('prob-b').value);
+        const mu = parseFloat(document.getElementById('normal-mu').value), sigma = parseFloat(document.getElementById('normal-sigma').value);
+        const probValueElement = document.getElementById('probability-value');
+        if (isNaN(a) || isNaN(b) || a >= b) {
+          probValueElement.textContent = "a debe ser < b";
+        } else {
+          probValueElement.textContent = ((normalCDF(b, mu, sigma) - normalCDF(a, mu, sigma)) * 100).toFixed(2) + '%';
+        }
+        updateNormal();
+    }
+
+    function openModal() { document.getElementById('chart-modal').classList.add('show'); setTimeout(createModalChart, 50); }
+    function closeModal() { document.getElementById('chart-modal').classList.remove('show'); if (modalChart) { modalChart.destroy(); modalChart = null; } }
+
+    function getThemeColors() {
+      const styles = getComputedStyle(document.documentElement);
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      return {
+        text: styles.getPropertyValue('--text-primary').trim(),
+        grid: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+      };
+    }
+
+    function getChartOptions() {
+      const colors = getThemeColors();
+      return {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 500 },
+        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+        scales: {
+          x: { type: 'linear', title: { display: true, text: 'Valor (x)', color: colors.text, font: { size: 14 } }, ticks: { color: colors.text }, grid: { color: colors.grid } },
+          y: { title: { display: true, text: 'Densidad de Probabilidad f(x)', color: colors.text, font: { size: 14 } }, ticks: { color: colors.text }, grid: { color: colors.grid }, beginAtZero: true }
+        },
+        elements: { point: { radius: 0 }, line: { tension: 0.4 } }
+      };
+    }
+
+    function createDistributionChart(canvasId, chartInstance) {
+      const mu = parseFloat(document.getElementById('normal-mu').value), sigma = parseFloat(document.getElementById('normal-sigma').value);
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+
+      const range = { min: mu - 4.5 * sigma, max: mu + 4.5 * sigma };
+      const step = (range.max - range.min) / 200;
+      const dataPoints = [];
+      for (let x = range.min; x <= range.max; x += step) dataPoints.push({ x: x, y: normalPDF(x, mu, sigma) });
+
+      const datasets = [];
+      if (document.getElementById('show-areas').checked) {
+        for (let i = 3; i >= 1; i--) {
+          datasets.push({
+            label: `μ ± ${i}σ`,
+            data: dataPoints.map(p => (p.x >= mu - i*sigma && p.x <= mu + i*sigma) ? p : {x: p.x, y: NaN}),
+            borderColor: 'transparent', backgroundColor: `rgba(59, 130, 246, ${0.1 + i * 0.15})`,
+            fill: {target: 'origin', above: `rgba(59, 130, 246, ${0.1 + i * 0.15})`},
+            pointRadius: 0, borderWidth: 0, spanGaps: false
+          });
+        }
+      }
+
+      const a = parseFloat(document.getElementById('prob-a').value), b = parseFloat(document.getElementById('prob-b').value);
+      if (!isNaN(a) && !isNaN(b) && a < b) {
+        datasets.push({
+            label: `P(${a} ≤ X ≤ ${b})`,
+            data: dataPoints.map(p => (p.x >= a && p.x <= b) ? p : {x: p.x, y: NaN}),
+            borderColor: 'transparent', backgroundColor: 'rgba(239, 68, 68, 0.6)',
+            fill: {target: 'origin', above: 'rgba(239, 68, 68, 0.6)'},
+            pointRadius: 0, borderWidth: 0, spanGaps: false
+          });
+      }
+      
+      datasets.push({
+        label: 'Distribución Normal', data: dataPoints,
+        borderColor: getThemeColors().text, borderWidth: 3,
+        fill: false,
+      });
+
+      return new Chart(ctx, { type: 'line', data: { datasets: datasets.reverse() }, options: getChartOptions() });
+    }
+
+    function createModalChart() { modalChart = createDistributionChart('modal-canvas', modalChart); }
+    
+    function updateNormal() {
+        const muSlider = document.getElementById('normal-mu'), sigmaSlider = document.getElementById('normal-sigma');
+        document.getElementById('normal-mu-value').textContent = muSlider.value;
+        document.getElementById('normal-sigma-value').textContent = sigmaSlider.value;
+        const muProgress = ((muSlider.value - muSlider.min) / (muSlider.max - muSlider.min)) * 100;
+        const sigmaProgress = ((sigmaSlider.value - sigmaSlider.min) / (sigmaSlider.max - sigmaSlider.min)) * 100;
+        muSlider.style.setProperty('--progress', `${muProgress}%`);
+        sigmaSlider.style.setProperty('--progress', `${sigmaProgress}%`);
+        mainChart = createDistributionChart('plot-normal', mainChart);
+    }
+
+    function updateAllCharts() { updateNormal(); }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      window.toggleTheme = toggleTheme; window.toggleSection = toggleSection; window.updateNormal = updateNormal;
+      window.calculateProbability = calculateProbability; window.openModal = openModal; window.closeModal = closeModal;
+      document.getElementById('chart-modal').addEventListener('click', (e) => { if (e.target.id === 'chart-modal') closeModal(); });
+      updateAllCharts(); calculateProbability();
+    });
+  </script>
+</body>
+</html>
