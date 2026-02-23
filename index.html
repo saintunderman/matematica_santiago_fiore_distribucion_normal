@@ -396,13 +396,14 @@
             <div class="formula">$$f(x; \mu, \sigma^2) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</div>
             <div class="formula-title">Función de Distribución Acumulada (CDF)</div>
             <div class="formula">$$F(x; \mu, \sigma^2) = \frac{1}{2}\left[1 + \operatorname{erf}\left(\frac{x-\mu}{\sigma\sqrt{2}}\right)\right]$$</div>
-            <div class="description" style="font-size: 0.9rem; margin-top: 0.5rem;">Donde $\operatorname{erf}$ es la función error, una integral no elemental fundamental en estadística.</div>
+            <div class="description" style="font-size: 0.9rem; margin-top: 0.5rem;">Donde $\operatorname{erf}(z) = \frac{2}{\sqrt{\pi}} \int_0^z e^{-t^2} dt$ es la función error de Gauss, una función especial no elemental fundamental en estadística y teoría de probabilidades.</div>
             <div class="formula-title">Transformación a Normal Estándar</div>
             <div class="formula">$$Z = \frac{X - \mu}{\sigma} \sim \mathcal{N}(0, 1)$$</div>
           </div>
           <div id="normal-moments" class="formula-section">
             <div class="formula-title">Momentos Principales</div>
-            <div class="formula">$$\text{Media: } E[X] = \mu$$ $$\text{Varianza: } \text{Var}(X) = \sigma^2$$ $$\text{Asimetría: } \gamma_1 = 0$$ $$\text{Curtosis: } \gamma_2 = 3$$</div>
+            <div class="formula">$$\text{Media: } E[X] = \mu$$ $$\text{Varianza: } \text{Var}(X) = \sigma^2$$ $$\text{Asimetría: } \gamma_1 = 0$$ $$\text{Exceso de Curtosis: } \gamma_2 = 0$$</div>
+            <div class="description" style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-muted);">Nota: La curtosis total es 3, pero el exceso de curtosis (respecto a la normal) es 0, indicando colas ni pesadas ni ligeras.</div>
             <div class="formula-title">Función Generadora de Momentos</div>
             <div class="formula">$$M_X(t) = e^{\mu t + \frac{1}{2}\sigma^2 t^2}$$</div>
           </div>
@@ -441,6 +442,10 @@
             <span>Distribución Normal</span>
           </div>
           <div class="legend-item">
+            <span class="legend-dot" style="background: rgba(245, 158, 11, 0.7); color: rgba(245, 158, 11, 0.7); border-style: dashed;"></span>
+            <span>Puntos de Inflexión (μ±σ)</span>
+          </div>
+          <div class="legend-item">
             <span class="legend-dot" style="background: rgba(239, 68, 68, 0.6); color: rgba(239, 68, 68, 0.6);"></span>
             <span>Área P(a ≤ X ≤ b)</span>
           </div>
@@ -471,7 +476,7 @@
       <section class="card">
         <h2 class="section-title">Propiedades y Contexto de Aplicación</h2>
         
-        <p class="description">La distribución Normal, conocida como la "curva de campana" o distribución Gaussiana, es la piedra angular de la estadística moderna. Su omnipresencia se debe al <b>Teorema Central del Límite</b>, uno de los resultados más notables de las matemáticas. Este teorema postula que al sumar un gran número de variables aleatorias independientes, su suma (y su media) tenderá a distribuirse normalmente, sin importar cómo se distribuyan las variables originales. Por ello, fenómenos naturales y sociales que resultan de la combinación de muchos factores pequeños e independientes (como la altura de una persona o los errores de medición) siguen esta distribución de forma natural.</p>
+        <p class="description">La distribución Normal, conocida como la "curva de campana" o distribución Gaussiana, es la piedra angular de la estadística moderna. Su omnipresencia se debe al <b>Teorema Central del Límite</b>, uno de los resultados más fundamentales de las matemáticas. Este teorema establece que la suma (o promedio) de un gran número de variables aleatorias independientes e idénticamente distribuidas tenderá a seguir una distribución normal, independientemente de la distribución original de las variables individuales (siempre que tengan media y varianza finitas). Por ello, fenómenos naturales y sociales que resultan de la combinación de muchos factores pequeños e independientes (como la altura de una población o los errores de medición) siguen esta distribución de forma natural.</p>
           
         <div class="property-card" style="margin-bottom: 2rem;">
             <h3 class="property-title">Regla Empírica 68-95-99.7</h3>
@@ -482,6 +487,9 @@
                 <div class="sd-mark"><div class="sd-bar" style="background: rgba(59, 130, 246, 0.5);"></div><div class="sd-label">μ ± 2σ</div><div class="sd-percentage">~95.45%</div></div>
                 <div class="sd-mark"><div class="sd-bar" style="background: rgba(59, 130, 246, 0.7);"></div><div class="sd-label">μ ± 3σ</div><div class="sd-percentage">~99.73%</div></div>
               </div>
+              <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); padding: 1rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid rgba(245, 158, 11, 0.7); border-radius: 8px;">
+                <b>💡 Nota Matemática:</b> Los <b>puntos de inflexión</b> de la curva normal (donde cambia de cóncava a convexa) ocurren exactamente en $x = \mu \pm \sigma$. En estos puntos, la segunda derivada $f''(x) = 0$. Las líneas naranjas punteadas en el gráfico marcan estas ubicaciones importantes.
+              </p>
             </div>
         </div>
 
@@ -489,22 +497,22 @@
             <h3 class="property-title" style="color: var(--accent-green)">Aplicaciones en el Mundo Real</h3>
             <div class="property-content">
               <ul style="padding-left: 1.2rem; display: grid; gap: 0.75rem;">
-                <li><b>Inferencia Estadística:</b> Es la base para pruebas de hipótesis (t-test, ANOVA) y para construir intervalos de confianza.</li>
-                <li><b>Control de Calidad:</b> Se usa para monitorear procesos de fabricación, estableciendo límites de control (ej. gráficos de control de Shewhart).</li>
-                <li><b>Finanzas y Gestión de Riesgos:</b> Modela el rendimiento de activos y es fundamental en modelos como el de Black-Scholes para la valoración de opciones.</li>
-                <li><b>Ciencias Naturales y Sociales:</b> Modela fenómenos como errores de medición, la altura o el CI de una población, o la distribución de velocidades de partículas en un gas.</li>
-                <li><b>Procesamiento de Señales:</b> El "ruido blanco" en señales de audio o imagen a menudo se modela como una distribución normal.</li>
+                <li><b>Inferencia Estadística:</b> Base de las pruebas paramétricas (t-test, ANOVA, regresión) y construcción de intervalos de confianza mediante el TCL.</li>
+                <li><b>Control de Calidad:</b> Gráficos de control (Shewhart, CUSUM) que usan límites basados en ±3σ para detectar desviaciones en procesos industriales.</li>
+                <li><b>Finanzas Cuantitativas:</b> Modelo de Black-Scholes para opciones, análisis de portafolios (Markowitz), y Value at Risk (VaR), aunque con limitaciones en colas.</li>
+                <li><b>Ciencias Naturales y Sociales:</b> Errores de medición instrumental, altura/peso poblacional, puntuaciones de CI (escaladas con μ=100, σ=15), velocidades moleculares (Maxwell-Boltzmann).</li>
+                <li><b>Machine Learning:</b> Inicialización de pesos en redes neuronales, distribución a priori en métodos bayesianos, y análisis de componentes principales (PCA).</li>
               </ul>
               <div class="examples-grid">
-                <div class="example-card"><div class="example-title">Ejemplo: Altura</div><div class="example-content">La altura de los adultos en una población sigue una distribución normal. Si μ=170cm y σ=10cm, el 68% de las personas medirán entre 160cm y 180cm.</div></div>
-                <div class="example-card"><div class="example-title">Ejemplo: Calificaciones</div><div class="example-content">Las notas de un examen suelen ser normales. Si la media es 75 y σ=10, el 95% de los estudiantes obtuvieron entre 55 y 95 puntos.</div></div>
+                <div class="example-card"><div class="example-title">Ejemplo: Altura</div><div class="example-content">La altura de los adultos en una población sigue una distribución normal. Si μ=170cm y σ=10cm, aproximadamente el 68% de las personas medirán entre 160cm y 180cm (μ±1σ).</div></div>
+                <div class="example-card"><div class="example-title">Ejemplo: Calificaciones</div><div class="example-content">Las notas de un examen suelen seguir una distribución normal. Si la media es μ=75 y σ=10, aproximadamente el 95% de los estudiantes obtuvieron entre 55 y 95 puntos (μ±2σ).</div></div>
               </div>
             </div>
         </div>
 
         <div class="advantages-section">
-            <div class="advantage"><div><div class="adv-label">FORTALEZAS CLAVE</div><div class="adv-content">• <b>Fundamento Teórico Sólido:</b> Es la base para la inferencia estadística, permitiendo pruebas de hipótesis y la creación de intervalos de confianza robustos.<br>• <b>Propiedades Matemáticas Elegantes:</b> Sus características la hacen predecible y fácil de manipular algebraicamente.<br>• <b>Aplicabilidad Universal (TCL):</b> Modela con precisión una vasta gama de fenómenos del mundo real.<br>• <b>Interpretación Intuitiva:</b> La media (μ) y la desviación estándar (σ) tienen significados directos y comprensibles.</div></div></div>
-            <div class="disadvantage"><div><div class="disadv-label">LIMITACIONES A CONSIDERAR</div><div class="disadv-content">• <b>Simetría Obligatoria:</b> No puede modelar datos con asimetría inherente (sesgados a la izquierda o derecha).<br>• <b>Subestima Eventos Extremos:</b> Sus "colas" decaen muy rápidamente, haciéndola inadecuada para modelar fenómenos con alto riesgo de valores atípicos.<br>• <b>Dominio Infinito:</b> Asume que la variable puede tomar cualquier valor real, lo cual es irreal para variables con límites físicos.<br>• <b>Sensibilidad a Outliers:</b> La media y la desviación estándar son sensibles a valores extremos que pueden distorsionar el modelo.</div></div></div>
+            <div class="advantage"><div><div class="adv-label">FORTALEZAS CLAVE</div><div class="adv-content">• <b>Fundamento Teórico Sólido:</b> Base de la inferencia estadística paramétrica, permitiendo pruebas de hipótesis y construcción de intervalos de confianza robustos.<br>• <b>Propiedades Matemáticas Elegantes:</b> Estabilidad bajo transformaciones lineales, suma de normales es normal, y forma analítica cerrada.<br>• <b>Aplicabilidad Universal (TCL):</b> Modela con precisión una vasta gama de fenómenos naturales y sociales resultantes de múltiples efectos aditivos.<br>• <b>Interpretación Intuitiva:</b> Los parámetros μ (localización) y σ² (escala) tienen significados directos y son fáciles de estimar e interpretar.</div></div></div>
+            <div class="disadvantage"><div><div class="disadv-label">LIMITACIONES A CONSIDERAR</div><div class="disadv-content">• <b>Simetría Obligatoria:</b> No puede modelar distribuciones asimétricas (sesgadas). Para datos con asimetría, considerar distribuciones log-normal, gamma o Weibull.<br>• <b>Colas Ligeras:</b> Decaimiento exponencial rápido en las colas, subestimando la probabilidad de eventos extremos. En finanzas, esto puede llevar a subestimar el riesgo.<br>• <b>Dominio No Acotado:</b> Asume soporte en $(-\infty, +\infty)$, inadecuado para variables con límites naturales (ej: tiempo, precios, proporciones).<br>• <b>Sensibilidad a Outliers:</b> Tanto μ como σ² son estimadores sensibles a valores atípicos que pueden distorsionar significativamente el modelo.</div></div></div>
         </div>
       </section>
     </main>
@@ -527,26 +535,58 @@
 
   <script>
     let mainChart = null, modalChart = null;
+    let debounceTimer = null;
+    
+    // Cache de elementos del DOM (optimización de performance)
+    let cachedElements = {};
+    let cachedColors = { text: '#1e293b', grid: 'rgba(0, 0, 0, 0.1)' };
 
-    function normalPDF(x, mu, sigma) { return (1/(sigma*Math.sqrt(2*Math.PI)))*Math.exp(-0.5*Math.pow((x-mu)/sigma,2)); }
-    function normalCDF(x, mean, stdDev) { return 0.5 * (1 + erf((x - mean) / (stdDev * Math.sqrt(2)))); }
+    // Función de densidad de probabilidad de la distribución normal
+    function normalPDF(x, mu, sigma) { 
+      return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2)); 
+    }
+    
+    // Función de distribución acumulada de la distribución normal
+    function normalCDF(x, mean, stdDev) { 
+      return 0.5 * (1 + erf((x - mean) / (stdDev * Math.sqrt(2)))); 
+    }
+    
+    // Función error (aproximación de Abramowitz y Stegun)
+    // Precisión: error absoluto máximo ≈ 1.5×10⁻⁷
     function erf(x) {
-      const sign=(x>=0)?1:-1; x=Math.abs(x);
-      const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
-      const t=1.0/(1.0+p*x);
-      const y=1.0-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
-      return sign*y;
+      const sign = (x >= 0) ? 1 : -1;
+      x = Math.abs(x);
+      
+      // Coeficientes de la aproximación
+      const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+      const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+      
+      const t = 1.0 / (1.0 + p * x);
+      const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+      
+      return sign * y;
     }
 
     function toggleTheme() {
       const body = document.body;
       const button = document.querySelector('.theme-toggle');
       if (body.getAttribute('data-theme') === 'dark') {
-        body.setAttribute('data-theme', 'light'); button.textContent = '🌙 Modo Oscuro';
+        body.setAttribute('data-theme', 'light'); 
+        button.textContent = '🌙 Modo Oscuro';
       } else {
-        body.setAttribute('data-theme', 'dark'); button.textContent = '☀️ Modo Claro';
+        body.setAttribute('data-theme', 'dark'); 
+        button.textContent = '☀️ Modo Claro';
       }
+      // Actualizar cache de colores
+      updateThemeColors();
       setTimeout(updateAllCharts, 100);
+    }
+    
+    function updateThemeColors() {
+      const styles = getComputedStyle(document.documentElement);
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      cachedColors.text = styles.getPropertyValue('--text-primary').trim();
+      cachedColors.grid = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
     }
 
     function toggleSection(button, sectionId) {
@@ -559,105 +599,253 @@
     }
     
     function calculateProbability() {
-        const a = parseFloat(document.getElementById('prob-a').value), b = parseFloat(document.getElementById('prob-b').value);
-        const mu = parseFloat(document.getElementById('normal-mu').value), sigma = parseFloat(document.getElementById('normal-sigma').value);
-        const probValueElement = document.getElementById('probability-value');
-        if (isNaN(a) || isNaN(b) || a >= b) {
-          probValueElement.textContent = "a debe ser < b";
-        } else {
-          probValueElement.textContent = ((normalCDF(b, mu, sigma) - normalCDF(a, mu, sigma)) * 100).toFixed(2) + '%';
-        }
-        updateNormal();
+      const a = parseFloat(cachedElements.probA.value);
+      const b = parseFloat(cachedElements.probB.value);
+      const mu = parseFloat(cachedElements.muSlider.value);
+      const sigma = parseFloat(cachedElements.sigmaSlider.value);
+      const probValueElement = cachedElements.probValue;
+      
+      // Validación mejorada de entradas
+      if (isNaN(a) || isNaN(b)) {
+        probValueElement.textContent = "Valores inválidos";
+        probValueElement.style.color = "var(--danger)";
+        return;
+      }
+      
+      if (a >= b) {
+        probValueElement.textContent = "Error: a debe ser < b";
+        probValueElement.style.color = "var(--danger)";
+        return;
+      }
+      
+      // Cálculo de probabilidad
+      const probability = (normalCDF(b, mu, sigma) - normalCDF(a, mu, sigma)) * 100;
+      probValueElement.textContent = probability.toFixed(4) + '%';
+      probValueElement.style.color = "var(--accent-blue)";
+      
+      updateNormal();
     }
 
     function openModal() { document.getElementById('chart-modal').classList.add('show'); setTimeout(createModalChart, 50); }
     function closeModal() { document.getElementById('chart-modal').classList.remove('show'); if (modalChart) { modalChart.destroy(); modalChart = null; } }
 
     function getThemeColors() {
-      const styles = getComputedStyle(document.documentElement);
-      const isDark = document.body.getAttribute('data-theme') === 'dark';
-      return {
-        text: styles.getPropertyValue('--text-primary').trim(),
-        grid: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-      };
+      return cachedColors;
     }
 
     function getChartOptions() {
       const colors = getThemeColors();
       return {
-        responsive: true, maintainAspectRatio: false, animation: { duration: 500 },
-        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+        responsive: true, 
+        maintainAspectRatio: false, 
+        animation: { duration: 300, easing: 'easeInOutQuart' },
+        plugins: { 
+          legend: { display: false }, 
+          tooltip: { 
+            enabled: true,
+            callbacks: {
+              label: function(context) {
+                if (context.dataset.label === 'Puntos de Inflexión') return null;
+                return context.dataset.label + ': ' + context.parsed.y.toFixed(4);
+              }
+            }
+          } 
+        },
         scales: {
-          x: { type: 'linear', title: { display: true, text: 'Valor (x)', color: colors.text, font: { size: 14 } }, ticks: { color: colors.text }, grid: { color: colors.grid } },
-          y: { title: { display: true, text: 'Densidad de Probabilidad f(x)', color: colors.text, font: { size: 14 } }, ticks: { color: colors.text }, grid: { color: colors.grid }, beginAtZero: true }
+          x: { 
+            type: 'linear', 
+            title: { display: true, text: 'Valor (x)', color: colors.text, font: { size: 14 } }, 
+            ticks: { color: colors.text }, 
+            grid: { color: colors.grid } 
+          },
+          y: { 
+            title: { display: true, text: 'Densidad de Probabilidad f(x)', color: colors.text, font: { size: 14 } }, 
+            ticks: { color: colors.text }, 
+            grid: { color: colors.grid }, 
+            beginAtZero: true 
+          }
         },
         elements: { point: { radius: 0 }, line: { tension: 0.4 } }
       };
     }
 
-    function createDistributionChart(canvasId, chartInstance) {
-      const mu = parseFloat(document.getElementById('normal-mu').value), sigma = parseFloat(document.getElementById('normal-sigma').value);
-      const ctx = document.getElementById(canvasId).getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-
+    function generateDataPoints(mu, sigma) {
       const range = { min: mu - 4.5 * sigma, max: mu + 4.5 * sigma };
-      const step = (range.max - range.min) / 200;
+      const isMobile = window.innerWidth < 768;
+      const numPoints = isMobile ? 150 : 200;
+      const step = (range.max - range.min) / numPoints;
+      
       const dataPoints = [];
-      for (let x = range.min; x <= range.max; x += step) dataPoints.push({ x: x, y: normalPDF(x, mu, sigma) });
-
+      for (let x = range.min; x <= range.max; x += step) {
+        dataPoints.push({ x: x, y: normalPDF(x, mu, sigma) });
+      }
+      return dataPoints;
+    }
+    
+    function buildDatasets(mu, sigma, dataPoints) {
       const datasets = [];
-      if (document.getElementById('show-areas').checked) {
+      const colors = getThemeColors();
+      
+      // 1. Primero la línea principal (se renderiza al fondo)
+      datasets.push({
+        label: 'Distribución Normal',
+        data: dataPoints,
+        borderColor: colors.text,
+        borderWidth: 3,
+        fill: false,
+        pointRadius: 0
+      });
+      
+      // 2. Marcadores de puntos de inflexión (μ±σ) - Líneas verticales sutiles
+      const maxY = Math.max(...dataPoints.map(p => p.y));
+      const inflectionLeft = mu - sigma;
+      const inflectionRight = mu + sigma;
+      
+      datasets.push({
+        label: 'Puntos de Inflexión',
+        data: [
+          { x: inflectionLeft, y: 0 }, 
+          { x: inflectionLeft, y: maxY },
+          { x: inflectionLeft, y: NaN },
+          { x: inflectionRight, y: 0 }, 
+          { x: inflectionRight, y: maxY }
+        ],
+        borderColor: 'rgba(245, 158, 11, 0.7)',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        fill: false,
+        pointRadius: 0,
+        spanGaps: false
+      });
+      
+      // 3. Área de probabilidad P(a ≤ X ≤ b) si existe
+      const a = parseFloat(cachedElements.probA.value);
+      const b = parseFloat(cachedElements.probB.value);
+      if (!isNaN(a) && !isNaN(b) && a < b) {
+        const areaData = dataPoints.map(p => (p.x >= a && p.x <= b) ? p : { x: p.x, y: NaN });
+        datasets.push({
+          label: `P(${a.toFixed(1)} ≤ X ≤ ${b.toFixed(1)})`,
+          data: areaData,
+          borderColor: 'transparent',
+          backgroundColor: 'rgba(239, 68, 68, 0.6)',
+          fill: { target: 'origin', above: 'rgba(239, 68, 68, 0.6)' },
+          pointRadius: 0,
+          borderWidth: 0,
+          spanGaps: false
+        });
+      }
+      
+      // 4. Finalmente las áreas de regla empírica (si están activas)
+      if (cachedElements.showAreas.checked) {
         for (let i = 3; i >= 1; i--) {
+          const areaData = dataPoints.map(p => 
+            (p.x >= mu - i * sigma && p.x <= mu + i * sigma) ? p : { x: p.x, y: NaN }
+          );
           datasets.push({
             label: `μ ± ${i}σ`,
-            data: dataPoints.map(p => (p.x >= mu - i*sigma && p.x <= mu + i*sigma) ? p : {x: p.x, y: NaN}),
-            borderColor: 'transparent', backgroundColor: `rgba(59, 130, 246, ${0.1 + i * 0.15})`,
-            fill: {target: 'origin', above: `rgba(59, 130, 246, ${0.1 + i * 0.15})`},
-            pointRadius: 0, borderWidth: 0, spanGaps: false
+            data: areaData,
+            borderColor: 'transparent',
+            backgroundColor: `rgba(59, 130, 246, ${0.1 + i * 0.15})`,
+            fill: { target: 'origin', above: `rgba(59, 130, 246, ${0.1 + i * 0.15})` },
+            pointRadius: 0,
+            borderWidth: 0,
+            spanGaps: false
           });
         }
       }
-
-      const a = parseFloat(document.getElementById('prob-a').value), b = parseFloat(document.getElementById('prob-b').value);
-      if (!isNaN(a) && !isNaN(b) && a < b) {
-        datasets.push({
-            label: `P(${a} ≤ X ≤ ${b})`,
-            data: dataPoints.map(p => (p.x >= a && p.x <= b) ? p : {x: p.x, y: NaN}),
-            borderColor: 'transparent', backgroundColor: 'rgba(239, 68, 68, 0.6)',
-            fill: {target: 'origin', above: 'rgba(239, 68, 68, 0.6)'},
-            pointRadius: 0, borderWidth: 0, spanGaps: false
-          });
-      }
       
-      datasets.push({
-        label: 'Distribución Normal', data: dataPoints,
-        borderColor: getThemeColors().text, borderWidth: 3,
-        fill: false,
-      });
+      return datasets;
+    }
+    
+    function createDistributionChart(canvasId, chartInstance) {
+      const mu = parseFloat(cachedElements.muSlider.value);
+      const sigma = parseFloat(cachedElements.sigmaSlider.value);
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      
+      const dataPoints = generateDataPoints(mu, sigma);
+      const datasets = buildDatasets(mu, sigma, dataPoints);
+      
+      if (chartInstance) {
+        // Actualizar datos existentes en lugar de destruir (OPTIMIZACIÓN CLAVE)
+        chartInstance.data.datasets = datasets;
+        chartInstance.options.scales.x.ticks.color = cachedColors.text;
+        chartInstance.options.scales.x.title.color = cachedColors.text;
+        chartInstance.options.scales.x.grid.color = cachedColors.grid;
+        chartInstance.options.scales.y.ticks.color = cachedColors.text;
+        chartInstance.options.scales.y.title.color = cachedColors.text;
+        chartInstance.options.scales.y.grid.color = cachedColors.grid;
+        chartInstance.update('none'); // 'none' = sin animación, actualización instantánea
+        return chartInstance;
+      }
 
-      return new Chart(ctx, { type: 'line', data: { datasets: datasets.reverse() }, options: getChartOptions() });
+      // Solo crear gráfico nuevo si no existe
+      return new Chart(ctx, { 
+        type: 'line', 
+        data: { datasets: datasets }, 
+        options: getChartOptions() 
+      });
     }
 
-    function createModalChart() { modalChart = createDistributionChart('modal-canvas', modalChart); }
+    function createModalChart() { 
+      modalChart = createDistributionChart('modal-canvas', modalChart); 
+    }
     
+    // Función de actualización del gráfico principal con debouncing ultrarrápido
     function updateNormal() {
-        const muSlider = document.getElementById('normal-mu'), sigmaSlider = document.getElementById('normal-sigma');
-        document.getElementById('normal-mu-value').textContent = muSlider.value;
-        document.getElementById('normal-sigma-value').textContent = sigmaSlider.value;
-        const muProgress = ((muSlider.value - muSlider.min) / (muSlider.max - muSlider.min)) * 100;
-        const sigmaProgress = ((sigmaSlider.value - sigmaSlider.min) / (sigmaSlider.max - sigmaSlider.min)) * 100;
-        muSlider.style.setProperty('--progress', `${muProgress}%`);
-        sigmaSlider.style.setProperty('--progress', `${sigmaProgress}%`);
+      const muSlider = cachedElements.muSlider;
+      const sigmaSlider = cachedElements.sigmaSlider;
+      
+      // Actualizar valores mostrados
+      cachedElements.muValue.textContent = muSlider.value;
+      cachedElements.sigmaValue.textContent = sigmaSlider.value;
+      
+      // Actualizar progreso visual de los sliders
+      const muProgress = ((muSlider.value - muSlider.min) / (muSlider.max - muSlider.min)) * 100;
+      const sigmaProgress = ((sigmaSlider.value - sigmaSlider.min) / (sigmaSlider.max - sigmaSlider.min)) * 100;
+      muSlider.style.setProperty('--progress', `${muProgress}%`);
+      sigmaSlider.style.setProperty('--progress', `${sigmaProgress}%`);
+      
+      // Debouncing ultrarrápido: 16ms ≈ 60fps para fluidez máxima
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
         mainChart = createDistributionChart('plot-normal', mainChart);
+      }, 16);
     }
 
     function updateAllCharts() { updateNormal(); }
 
     document.addEventListener('DOMContentLoaded', () => {
-      window.toggleTheme = toggleTheme; window.toggleSection = toggleSection; window.updateNormal = updateNormal;
-      window.calculateProbability = calculateProbability; window.openModal = openModal; window.closeModal = closeModal;
-      document.getElementById('chart-modal').addEventListener('click', (e) => { if (e.target.id === 'chart-modal') closeModal(); });
-      updateAllCharts(); calculateProbability();
+      // Cachear elementos del DOM para optimizar performance
+      cachedElements = {
+        muSlider: document.getElementById('normal-mu'),
+        sigmaSlider: document.getElementById('normal-sigma'),
+        muValue: document.getElementById('normal-mu-value'),
+        sigmaValue: document.getElementById('normal-sigma-value'),
+        probA: document.getElementById('prob-a'),
+        probB: document.getElementById('prob-b'),
+        probValue: document.getElementById('probability-value'),
+        showAreas: document.getElementById('show-areas')
+      };
+      
+      // Cachear colores del tema actual
+      updateThemeColors();
+      
+      // Exponer funciones globales
+      window.toggleTheme = toggleTheme; 
+      window.toggleSection = toggleSection; 
+      window.updateNormal = updateNormal;
+      window.calculateProbability = calculateProbability; 
+      window.openModal = openModal; 
+      window.closeModal = closeModal;
+      
+      // Event listeners
+      document.getElementById('chart-modal').addEventListener('click', (e) => { 
+        if (e.target.id === 'chart-modal') closeModal(); 
+      });
+      
+      // Inicialización
+      updateAllCharts(); 
+      calculateProbability();
     });
   </script>
 </body>
