@@ -6,7 +6,7 @@ Una herramienta interactiva y educativa diseñada para visualizar y calcular pro
 
 * **Gráficos Interactivos:** Generación dinámica de la curva de Gauss basada en la media ($\mu$) y la desviación estándar ($\sigma$).
 * **Cálculo de Probabilidades:** Permite calcular áreas bajo la curva en tres modalidades:
-    * **Menor que ($P(X < a)$):** Probabilidad acumulada a la izquierda.
+    * **Menor que ($$P(X < a)$$):** Probabilidad acumulada a la izquierda.
     * **Mayor que ($P(X > a)$):** Probabilidad a la derecha.
     * **Entre valores ($P(a < X < b)$):** Probabilidad en un intervalo específico.
 * **Visualización en Tiempo Real:** Sombreado automático de la región calculada dentro del gráfico para una mejor interpretación visual.
