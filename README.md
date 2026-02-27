@@ -13,15 +13,6 @@ Una herramienta interactiva y educativa diseñada para visualizar y calcular pro
 * **Notación Matemática Profesional:** Integración con **MathJax** para mostrar las funciones de densidad de probabilidad y resultados en formato LaTeX.
 * **Diseño Moderno:** Interfaz limpia, responsiva y optimizada para el aprendizaje.
 
-## Tecnologías Utilizadas
-
-* **HTML5 & CSS3:** Maquetación semántica y diseño basado en componentes visuales claros.
-* **JavaScript (ES6+):** Motor lógico para el procesamiento de datos estadísticos.
-* **Chart.js:** Biblioteca potente para el renderizado de gráficos y áreas sombreadas.
-* **MathJax:** Para la representación de fórmulas como la función de densidad:
-    $$f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}$$
-* **Algoritmos de Aproximación:** Uso de funciones matemáticas para aproximar el área bajo la curva (función de error).
-
 ## Cómo utilizarlo
 
 1.  Abre el archivo en cualquier navegador moderno (Chrome, Firefox, Edge, etc.).
